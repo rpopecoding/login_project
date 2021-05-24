@@ -1,0 +1,11 @@
+<head>
+  <title>Login Successful</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+
+<body>
+  <h1>Successful login</h1>
+  <h1>{{user.first_name}} {{user.last_name}}</h1>
+  <a href="/logout"><p>logout</p></a>
+</body>
