@@ -15,6 +15,7 @@
   </ul>
   {% endif %} {% if logged_in == True %}
   <h1>Welcome {{user.first_name}} {{user.last_name}}</h1>
+  <a href="/wall"><p>Go to wall</p></a>
   <a href="/logout"><p>logout</p></a>
   {% endif %}
 

@@ -73,9 +73,61 @@ def logout(request):
     return redirect("/")
 
 def success(request):
-    user = User.objects.get(id=request.session['active_user'])
-    context={
-        "user": user
-        }
-    return render(request, "success.html", context)
+    if 'active_user' in request.session:
+        user = User.objects.get(id=request.session['active_user'])
+        context={
+            "user": user
+            }
+        return render(request, "success.html", context)
+    return redirect("/")
+    
+def wall(request):
+    if 'active_user' in request.session:
+        user = User.objects.get(id=request.session['active_user'])
+        all_tweets = Tweet.objects.all()
+
+        context={
+            "user": user,
+            "all_tweets": all_tweets,
+            }
+        return render(request, "wall.html", context)
+    return redirect("/")
+
+def post_tweet(request):
+    if 'active_user' not in request.session:
+        return redirect("/")
+    if request.method == "POST":
+        user = User.objects.get(id=request.session['active_user'])
+        text = request.POST['text']
+
+        errors = Tweet.objects.basic_validator(request.POST)
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect('/')
+        Tweet.objects.create(text=text, author=user)
+        return redirect("/wall")
+    return redirect('/')
+
+def comment(request):
+    if 'active_user' not in request.session:
+        return redirect("/")
+    if request.method == "POST":
+
+        user = User.objects.get(id=request.session['active_user'])
+        tweet = Tweet.objects.get(id=request.POST['tweet_id'])
+        text = request.POST['text']
+
+        
+        Comment.objects.create(text=text, tweet=tweet, author=user)
+
+        return redirect("/wall")
+    return redirect('/')
+
+def delete_tweet(request):
+    tweet = Tweet.objects.get(id=request.POST['tweet_id'])
+    tweet.delete()
+    return redirect("/wall")
+
+
     

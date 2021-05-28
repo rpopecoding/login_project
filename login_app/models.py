@@ -27,3 +27,25 @@ class User(models.Model):
     def __str__(self):
         return f"{self.first_name}"
 
+class TweetManager(models.Manager):
+    def basic_validator(self, postData):
+        errors = {}
+        if len(postData['text']) < 2 or len(postData['text']) > 280:
+            errors["length"] = "Post must be between 2 and 280 characters."
+            return errors
+        return errors
+
+class Tweet(models.Model):
+    text = models.CharField(max_length=300)
+    author = models.ForeignKey(User, related_name="tweets", on_delete = models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = TweetManager()
+
+
+class Comment(models.Model):
+    text = models.CharField(max_length=300)
+    author = models.ForeignKey(User, related_name="comments", on_delete = models.CASCADE)
+    tweet = models.ForeignKey(Tweet, related_name="comments", on_delete = models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
